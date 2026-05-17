@@ -3,6 +3,7 @@ import UserForm from "./components/UserForm/UserForm";
 import type { FormMode } from "./components/UserForm/UserForm.types";
 import { useState } from "react";
 import type { User } from "./App.types";
+import HookForm from "./components/HookForm/Hookform";
 
 // Parent component usage
 const App = () => {
@@ -19,7 +20,7 @@ const App = () => {
 
   return (
     <div>
-      <button onClick={() => { setMode("add"); setEditingUser(null); }}>
+      {/* <button onClick={() => { setMode("add"); setEditingUser(null); }}>
         Add User
       </button>
       
@@ -30,7 +31,9 @@ const App = () => {
           onSubmit={mode === "add" ? handleAdd : handleEdit}
           onCancel={() => { setMode("add"); setEditingUser(null); }}
         />
-      )}
+      )} */}
+
+      <HookForm/>
     </div>
   );
 };
