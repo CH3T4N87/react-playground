@@ -1,32 +1,40 @@
-import { Controller } from "react-hook-form"
-import type { BaseFieldProps, Option } from "./App.types"
+import { type FieldValues, type RegisterOptions, type Path, Controller, useForm, useFormContext } from "react-hook-form";
+import type { BaseFieldProps } from "./App.types";
 
-interface FormSelectProps<T extends Record<string, any>> extends BaseFieldProps<T> {
-  options: Option[]
+interface Option {
+  label: string,
+  value: string
 }
 
-const FormSelect = <T extends Record<string, any>>({
-  name, control, label, options,
-}: FormSelectProps<T>) => (
-  <div>
-    <label>{label}</label>
+interface FormSelectProps<T extends FieldValues> extends BaseFieldProps<T> {
+  options: Option[],
+  rules?: RegisterOptions<T, Path<T>>
+}
 
-    <Controller
-      name={name}
-      control={control}
-      render={({ field, fieldState }) => (
-        <>
-          <select {...field}>
-            <option value="">Select</option>
-            {options.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-          {fieldState.error && <p>{fieldState.error.message}</p>}
-        </>
-      )}
-    />
-  </div>
-)
+const FormSelect = <T extends FieldValues>({ name, label, options, rules }: FormSelectProps<T>) => {
+  const { control } = useFormContext<T>();
+  return (
+    <div>
+      <label htmlFor={name}>{label} {rules?.required && <span>*</span>}</label>
+
+      <Controller
+        name={name}
+        control={control}
+        rules={rules}
+        render={({ field, fieldState: { error } }) =>
+          <>
+            <select id={name} {...field}>
+              <option>Select a option</option>
+              {
+                options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)
+              }
+            </select>
+            {error && <span>{error.message}</span>}
+          </>
+        }
+      />
+    </div>
+  )
+}
 
 export default FormSelect

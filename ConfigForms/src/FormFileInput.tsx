@@ -1,5 +1,5 @@
 // FormFileInput.tsx
-import { Controller, type Control, type Path } from "react-hook-form";
+import { Controller, useFormContext, type Control, type Path } from "react-hook-form";
 
 interface FormFileInputProps<T extends Record<string, any>> {
   name: Path<T>;
@@ -11,11 +11,12 @@ interface FormFileInputProps<T extends Record<string, any>> {
 
 const FormFileInput = <T extends Record<string, any>>({
   name,
-  control,
   label,
   accept = ".pdf",
   rules
 }: FormFileInputProps<T>) => {
+
+    const { control } = useFormContext()
   return (
     <div>
       <label>{label} {rules?.required && "*"}</label>

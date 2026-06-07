@@ -1,12 +1,6 @@
-import type { Control, Path } from "react-hook-form"
+import type { Control, FieldValues, Path } from "react-hook-form";
 
-export interface Option {
+export interface BaseFieldProps<T extends FieldValues> {
+  name: Path<T>,
   label: string,
-  value: string
-}
-
-export interface BaseFieldProps<T extends Record<string, any>> {
-  name: Path<T>
-  control: Control<T>
-  label: string
 }

@@ -1,33 +1,37 @@
-import { Controller, type Control, type Path, type RegisterOptions } from "react-hook-form";
+import { type RegisterOptions, type Path, Controller, type FieldValues, useFormContext } from "react-hook-form";
 import type { BaseFieldProps } from "./App.types";
+import type { HTMLInputTypeAttribute } from "react";
+import FormField from "./FormField";
 
-interface FormInputProps<T extends Record<string, any>> extends BaseFieldProps<T> {
-  type?: string,
+interface FileInputProps<T extends FieldValues> extends BaseFieldProps<T> {
+  type?: HTMLInputTypeAttribute,
   placeholder?: string,
   rules?: RegisterOptions<T, Path<T>>
 }
 
-const FormInput = <T extends Record<string, any>>({ label, name, control, type, placeholder, rules }: FormInputProps<T>) => {
+const FormInput = <T extends FieldValues>({ name, label, type = "text", placeholder, rules }: FileInputProps<T>) => {
+  const { control } = useFormContext<T>();
   return (
     <div>
-      <label htmlFor={name}>{label} {rules?.required && <span>*</span>} </label>
       <Controller
         name={name}
         control={control}
         rules={rules}
         render={({ field, fieldState: { error } }) =>
-          <>
-            <input {...field}
-              name={name}
-              type={type}
+          <FormField
+            label={label}
+            required={!!rules?.required}
+            error={error?.message}
+          >
+            <input
+              {...field}
+              id={name}
               placeholder={placeholder}
-              className="input-normal"
+              type={type}
             />
-            {error && <span>{error.message}</span>}
-          </>
+          </FormField>
         }
       />
-
     </div>
   )
 }
