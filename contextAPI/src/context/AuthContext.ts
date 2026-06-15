@@ -1,79 +1,81 @@
-// import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, type PropsWithChildren } from "react";
+import type { TempUser } from "./types";
 
-// const AuthContext = createContext(null);
+interface AuthContextType {
+  user: TempUser | null;
+  token: string | null;
+  isLoading: boolean;
+  login: (userData: TempUser, authToken: string) => void;
+  logout: () => void;
+}
 
-// export function AuthProvider({ children }) {
-//   const [user, setUser] = useState(null);
-//   const [token, setToken] = useState(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
-//   // Rehydrate from localStorage on app load
-//   useEffect(() => {
-//     const savedToken = localStorage.getItem("token");
-//     const savedUser = localStorage.getItem("user");
-//     if (savedToken && savedUser) {
-//       setToken(savedToken);
-//       setUser(JSON.parse(savedUser));
-//     }
-//   }, []);
+export function AuthProvider({ children }: PropsWithChildren) {
+  const [user, setUser] = useState<TempUser | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-//   const login = (userData, authToken) => {
-//     setUser(userData);
-//     setToken(authToken);
-//     localStorage.setItem("token", authToken);
-//     localStorage.setItem("user", JSON.stringify(userData));
-//   };
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token");
 
-//   const logout = () => {
-//     setUser(null);
-//     setToken(null);
-//     localStorage.removeItem("token");
-//     localStorage.removeItem("user");
-//   };
+    if (!savedToken) {
+      setIsLoading(false);
+      return;
+    }
 
-//   return (
-//     <AuthContext.Provider value={{ user, token, login, logout }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// }
+    setToken(savedToken);
+    fetchUser(savedToken);
+  }, []);
 
-// // Custom hook for easy access
-// export function useAuth() {
-//   const ctx = useContext(AuthContext);
-//   if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
-//   return ctx;
-// }
+  const fetchUser = async (authToken: string) => {
+    try {
+      const response = await fetch("/api/me", {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
 
+      if (!response.ok) {
+        throw new Error("Failed to fetch user");
+      }
 
+      const userData: TempUser = await response.json();
+      setUser(userData);
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+      // Token is invalid/expired, clear everything
+      localStorage.removeItem("token");
+      setToken(null);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-// import { AuthProvider } from "./AuthContext";
+  const login = (userData: TempUser, authToken: string) => {
+    setUser(userData);
+    setToken(authToken);
+    localStorage.setItem("token", authToken);
+  };
 
-// ReactDOM.createRoot(document.getElementById("root")).render(
-//   <AuthProvider>
-//     <App />
-//   </AuthProvider>
-// );
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("token");
+  };
 
+  return (
+    <AuthContext.Provider value={{ user, token, isLoading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
 
-// import { useAuth } from "./AuthContext";
-
-// function LoginPage() {
-//   const { login } = useAuth();
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     const res = await fetch("/api/auth/login", { method: "POST", body: ... });
-//     const { user, token } = await res.json();
-//     login(user, token); // saves to state + localStorage
-//   };
-//   // ...
-// }
-
-
-
-// import { useAuth } from "./AuthContext";
-
-// function Navbar() {
-//   const { user, logout } = useAuth();
-//   return <div>Hello, {user?.name} <button onClick={logout}>Log out</button></div>;
-// }
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+  return ctx;
+}
