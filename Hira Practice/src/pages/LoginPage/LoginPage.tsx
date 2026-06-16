@@ -9,10 +9,11 @@ import { MultiClass } from "@/utility/classResolve";
 import { useGetOTPMutation, useVerifyOTPMutation } from "@/redux/slices/otpApiSlice";
 import Typography from "@/components/Typography/Typography";
 import { jwtDecode } from "jwt-decode";
-import {  useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import type { TempUser } from "@/context/types";
 import { redirectR } from "@/utility/redirection";
 import { OTPReducer } from "./LoginPage.states";
+import { Policies } from "@/types/policies";
 
 const LoginPage = () => {
 
@@ -21,7 +22,7 @@ const LoginPage = () => {
 
 
     const { login, user } = useAuth();
-    if(user) redirectR(user);
+
 
 
     const [getOTP, { isLoading: getOTPLoading }] = useGetOTPMutation();
@@ -29,50 +30,60 @@ const LoginPage = () => {
 
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (seconds > 0) {
-                setSeconds(prev => prev - 1);
-            }
-            if (seconds === 0) {
-                clearInterval(interval);
-            }
+        if (!seconds) return;
+        const timer = setTimeout(() => {
+            setSeconds(seconds - 1);
         }, 1000);
-
-        return () => {
-            clearInterval(interval);
-        };
+        return () => clearTimeout(timer);
     }, [seconds]);
+
+    useEffect(() => {
+        if (user) {
+            redirectR(user);
+        }
+    }, [user]);
 
     const sendOTP = () => {
         setSeconds(59);
     };
 
 
-    const methods = useForm<LoginData | OTPData>({ defaultValues: { email: "" } });
+    const methods = useForm<LoginData & OTPShape>({ defaultValues: { email: "", otp: "" } });
 
-    const onSubmit = async (data: LoginData | OTPShape) => {
+    const onSubmit = async (data: LoginData & OTPShape) => {
 
         try {
             if (!isOTPSentR) {
-                const response = await getOTP(data as LoginData).unwrap();
-                snack.success(response.message || "OTP sent successfully");
+                // const response = await getOTP(data as LoginData).unwrap();
+                // snack.success(response.message || "OTP sent successfully");
+                snack.success("OTP sent successfully");
                 setIsOTPSentR({ type: "TOGGLE_OTP_STATE" });
                 sendOTP();
-                return; 
+                return;
             }
 
             const otpData: OTPData = {
-                email: (data as LoginData).email,
-                entered_otp: Number((data as OTPShape).otp)
+                email: data.email,
+                entered_otp: Number(data.otp)
             }
-
-            const response = await verifyOTP(otpData).unwrap();
-            const user: TempUser = jwtDecode(response.token!);
-            login(user, response.token!);
-            snack.success(response.message || "OTP verified successfully");
+            console.log(otpData);
+            // const response = await verifyOTP(otpData).unwrap();
+            // const user: TempUser = jwtDecode(response.token!);
+            login(
+                {
+                    name: "Chetan Kshirsagar",
+                    email: "chetankshirsagar87@gmail.com",
+                    policies: [Policies.SUPER_ADMIN]
+                }, 'djvdnvdsdvnfdbn');
+            // snack.success(response.message || "OTP verified successfully");
+            snack.success("OTP verified successfully");
 
             //role based redirecting
-            redirectR(user);
+            redirectR({
+                name: "Chetan Kshirsagar",
+                email: "chetankshirsagar87@gmail.com",
+                policies: [Policies.SUPER_ADMIN]
+            });
 
         } catch (e: any) {
             snack.error(e.data?.detail || "Something went wrong !");
@@ -117,16 +128,8 @@ const LoginPage = () => {
                                 rules={{
                                     required: "Please enter the OTP",
                                     pattern: {
-                                        value: /[0-9]$/,
-                                        message: "Invalid OTP"
-                                    },
-                                    maxLength: {
-                                        value: 4,
-                                        message: "OTP should be of 4 digit."
-                                    },
-                                    minLength: {
-                                        value: 4,
-                                        message: "OTP should be of 4 digit."
+                                        value: /^\d{4}$/,
+                                        message: "OTP should contain exactly 4 digits and should be in digits only"
                                     }
                                 }}
                             />

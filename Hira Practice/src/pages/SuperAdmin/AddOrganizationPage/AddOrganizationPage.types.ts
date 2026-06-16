@@ -12,3 +12,11 @@ export interface OrganizationData {
 export interface AddOrganizationPageProps {
     // isEditingMode?: boolean
 }
+
+
+
+export type ModalState =
+  | { type: "add" }
+  | { type: "update"; id: string }
+  | { type: "delete"; id: string }
+  | null;

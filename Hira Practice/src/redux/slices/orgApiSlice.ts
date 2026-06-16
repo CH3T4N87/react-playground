@@ -10,7 +10,7 @@ export const orgApiSlice = apiSlice.injectEndpoints({
                 method: 'GET'
             })
         }),
-        getOrganizations: builder.query<OrganizationData[], undefined>({
+        getOrganizations: builder.query<OrganizationData[], void>({
             query: () => ({
                 url: '/organization/get_all_active_organizations',
                 method: 'GET'
@@ -40,7 +40,7 @@ export const orgApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["getOrgs"]
         }),
-        getArchivedOrganizations: builder.query<GetArchivedOrganizationsResponse, undefined>({
+        getArchivedOrganizations: builder.query<GetArchivedOrganizationsResponse, void>({
             query: () => ({
                 url: "/organization/get_archived",
                 method: "GET",
