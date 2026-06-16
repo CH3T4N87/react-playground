@@ -1,0 +1,8 @@
+.snackbar{
+    position: absolute;
+    background-color: #ccc;
+    padding: 0.25rem 1rem;
+    border: thin solid;
+    bottom: 1rem;
+    right: 1rem
+}

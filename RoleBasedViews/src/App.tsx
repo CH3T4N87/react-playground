@@ -1,39 +1,30 @@
-import { useReducer } from "react"
-import type { LoginAction, LoginState } from "./App.types"
-import LoginPage from "./components/LoginPage/LoginPage"
-import DashboardShell from "./components/DashboardShell/DashboardShell"
+import axios, { Axios } from "axios";
+import { toast } from "./Toastify/toast";
+import ToastContainer from "./Toastify/ToastContainer";
+import { snack } from "./Snackbar/useSnackbar";
+import { SnackbarContainer } from "./Snackbar/SnackbarContainer";
 
-const loginReducer = (state: LoginState, action: LoginAction): LoginState => {
-  switch(action.type){
-    case "LOGIN_SUCCESS":
-      return {
-          isAuthenticated: true,
-          user: action.user
-      }
-    case "LOGOUT":
-      return {
-        isAuthenticated: false,
-        user: null
-      }
-  }
-  return state
+
+interface AxiosResponse {
+  success: true,
+  data: any,
+  message: string
 }
 
-const initialState: LoginState = {
-  isAuthenticated: false,
-  user: null
-}
-const App = () => {
-  const [loginState, updateLoginState] = useReducer(loginReducer, initialState);
-  const { user, isAuthenticated } = loginState;
-  return (
-    <div>
-      <LoginPage loginStateDispatch={updateLoginState}/>
-      {
-        isAuthenticated && <DashboardShell user={user!} loginStateDispatch={updateLoginState}/>
-      }
-    </div>
-  )
-}
+const clientAPI = axios.create({
+  baseURL: "http://localhost:5173/",
+  timeout: 3000
+})
+const MyComponent = () => {
 
-export default App
+  const handleSubmit = async () => {
+    snack.success("Success");
+  };
+
+  return <div>
+    <button onClick={handleSubmit}>Submit</button>
+    <SnackbarContainer />
+  </div>;
+};
+
+export default MyComponent;
