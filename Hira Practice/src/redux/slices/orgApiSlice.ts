@@ -10,7 +10,7 @@ export const orgApiSlice = apiSlice.injectEndpoints({
                 method: 'GET'
             })
         }),
-        getOrganizations: builder.query<OrganizationData[], void>({
+        getOrganizations: builder.query<OrganizationData[], undefined>({
             query: () => ({
                 url: '/organization/get_all_active_organizations',
                 method: 'GET'
@@ -38,9 +38,9 @@ export const orgApiSlice = apiSlice.injectEndpoints({
                 url: `/organization/delete/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["getOrgs"]
+            invalidatesTags: ["getOrgs", "getArchivedOrgs"]
         }),
-        getArchivedOrganizations: builder.query<GetArchivedOrganizationsResponse, void>({
+        getArchivedOrganizations: builder.query<GetArchivedOrganizationsResponse, undefined>({
             query: () => ({
                 url: "/organization/get_archived",
                 method: "GET",
@@ -52,7 +52,7 @@ export const orgApiSlice = apiSlice.injectEndpoints({
                 url: `/organization/restore/${id}`,
                 method: "PATCH",
             }),
-            invalidatesTags: ["getArchivedOrgs"]
+            invalidatesTags: ["getArchivedOrgs", "getOrgs"]
         }),
     })
 })

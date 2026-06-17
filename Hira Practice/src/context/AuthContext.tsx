@@ -1,13 +1,5 @@
 import { createContext, useContext, useState, useEffect, type PropsWithChildren } from "react";
-import type { TempUser } from "./types";
-
-
-interface AuthContextType {
-  user: TempUser| null; 
-  token: string | null;
-  login: (userData: TempUser, authToken: string) => void;
-  logout: () => void;
-}
+import type { AuthContextType, TempUser } from "./types";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 

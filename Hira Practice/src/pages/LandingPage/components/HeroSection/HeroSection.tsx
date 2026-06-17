@@ -5,9 +5,9 @@ const HeroSection = () => {
     return (
         <>
             <p className={styles.heroText}>
-                <Typography variant="h1">More projects.</Typography>
-                <Typography variant="h1">More agents.</Typography>
-                <Typography variant="h1">Less chaos.</Typography>
+                <span>More projects.</span>
+                <span>More Agents.</span>
+                <span>Less chaos.</span>
             </p>
             <p className={styles.heroDescription}>
                 <Typography variant="caption">Hira orchestrates across your AI tech stack

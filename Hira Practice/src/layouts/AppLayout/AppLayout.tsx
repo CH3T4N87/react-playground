@@ -4,11 +4,9 @@ import Typography from "@/components/Typography/Typography";
 import diamondLogo from "@/assets/diamond.png";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./AppLayout.module.scss";
+import type { NavItem } from "./AppLayout.types";
 
-type NavItem = {
-    label: string;
-    to: string;
-};
+
 
 const NAV_ITEMS_BY_ROLE: Record<string, NavItem[]> = {
     SUPERADMIN: [
@@ -33,7 +31,6 @@ const AppLayout = () => {
     const navigate = useNavigate();
 
     const navItems = NAV_ITEMS_BY_ROLE[user?.policies[0] ?? ""] ?? [];
-    console.log("navItems: ", navItems);
 
     return (
         <div className={styles.layoutContainer}>

@@ -13,7 +13,6 @@ import { useAuth } from "@/context/AuthContext";
 import type { TempUser } from "@/context/types";
 import { redirectR } from "@/utility/redirection";
 import { OTPReducer } from "./LoginPage.states";
-import { Policies } from "@/types/policies";
 
 const LoginPage = () => {
 
@@ -24,10 +23,8 @@ const LoginPage = () => {
     const { login, user } = useAuth();
 
 
-
     const [getOTP, { isLoading: getOTPLoading }] = useGetOTPMutation();
     const [verifyOTP, { isLoading: verifyOTPLoading }] = useVerifyOTPMutation();
-
 
     useEffect(() => {
         if (!seconds) return;
@@ -54,9 +51,8 @@ const LoginPage = () => {
 
         try {
             if (!isOTPSentR) {
-                // const response = await getOTP(data as LoginData).unwrap();
-                // snack.success(response.message || "OTP sent successfully");
-                snack.success("OTP sent successfully");
+                const response = await getOTP(data as LoginData).unwrap();
+                snack.success(response.message || "OTP sent successfully");
                 setIsOTPSentR({ type: "TOGGLE_OTP_STATE" });
                 sendOTP();
                 return;
@@ -66,27 +62,19 @@ const LoginPage = () => {
                 email: data.email,
                 entered_otp: Number(data.otp)
             }
-            console.log(otpData);
-            // const response = await verifyOTP(otpData).unwrap();
-            // const user: TempUser = jwtDecode(response.token!);
-            login(
-                {
-                    name: "Chetan Kshirsagar",
-                    email: "chetankshirsagar87@gmail.com",
-                    policies: [Policies.SUPER_ADMIN]
-                }, 'djvdnvdsdvnfdbn');
-            // snack.success(response.message || "OTP verified successfully");
-            snack.success("OTP verified successfully");
+
+            const response = await verifyOTP(otpData).unwrap();
+            console.log(response);
+            const user: TempUser = jwtDecode(response.access_token!);
+            login(user, response.access_token!);
+            snack.success(response.message || "OTP verified successfully");
 
             //role based redirecting
-            redirectR({
-                name: "Chetan Kshirsagar",
-                email: "chetankshirsagar87@gmail.com",
-                policies: [Policies.SUPER_ADMIN]
-            });
+            redirectR(user);
 
         } catch (e: any) {
-            snack.error(e.data?.detail || "Something went wrong !");
+            console.log(e);
+            snack.error(e.data?.detail.message|| e?.error || "Something went wrong !");
         }
 
     }
@@ -129,7 +117,7 @@ const LoginPage = () => {
                                     required: "Please enter the OTP",
                                     pattern: {
                                         value: /^\d{4}$/,
-                                        message: "OTP should contain exactly 4 digits and should be in digits only"
+                                        message: "OTP should contain exactly 4 digits"
                                     }
                                 }}
                             />
@@ -148,8 +136,9 @@ const LoginPage = () => {
                 }
 
                 <Button type="submit" variant="primary">{isOTPSentR ? (verifyOTPLoading ? "Verifying..." : "Verify") : (getOTPLoading ? "Sending....." : "Send OTP")}</Button>
+                {isOTPSentR && <span className={styles.changeEmailTag} onClick={() => setIsOTPSentR({ type: "TOGGLE_OTP_STATE" })}>change email</span>}
             </form>
-        </FormProvider>
+        </FormProvider >
     )
 }
 

@@ -4,7 +4,7 @@ import type { OrganizationData } from "@/pages/SuperAdmin/AddOrganizationPage/Ad
 export interface AuthResponse {
     data: any,
     message: string,
-    token?: string,
+    access_token?: string,
 }
 
 export interface IOrgResponse {

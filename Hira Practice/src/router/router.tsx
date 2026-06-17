@@ -5,11 +5,10 @@ import { Policies } from "@/types/policies";
 import DeleteOrganization from "@/pages/SuperAdmin/DeleteOrganization/DeleteOrganization";
 import ArchivedOrganizations from "@/pages/SuperAdmin/ArchivedOrganizations/ArchivedOrganizations";
 import RestoreOrganization from "@/pages/SuperAdmin/RestoreOrganization/RestoreOrganization";
-
+import AppLayout from "@/layouts/AppLayout/AppLayout";
 const SetPasswordPage = lazy(() => import("@/pages/SetPasswordPage/SetPasswordPage"));
 const AddOrganizationPage = lazy(() => import("@/pages/SuperAdmin/AddOrganizationPage/AddOrganizationPage"));
 const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage/UnauthorizedPage"));
-const AppLayout = lazy(() => import("@/layouts/AppLayout"));
 const Dashboard = lazy(() => import("@/pages/SuperAdmin/Dashboard/Dashboard"));
 const OrganizationsPage = lazy(() => import("@/pages/SuperAdmin/OrganizationsPage/OrganizationsPage"));
 const App = lazy(() => import("../App"));
@@ -22,7 +21,7 @@ const canActive = (component: React.ComponentType, guards: Predicate[]) => {
         return component;
     }
     return UnauthorizedPage;
-};
+}
 
 export const router = createBrowserRouter([
     {
@@ -31,7 +30,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "",
-                element: <LandingPage />,
+                element: <LandingPage />
             },
             {
                 path: "/super-admin",
@@ -39,7 +38,7 @@ export const router = createBrowserRouter([
                 children: [
                     {
                         path: "dashboard",
-                        element: <Dashboard />,
+                        element: <Dashboard />
                     },
                     {
                         path: "organizations",
@@ -49,7 +48,7 @@ export const router = createBrowserRouter([
                         path: "organizations/archived",
                         element: <ArchivedOrganizations />,
                     },
-                ],
+                ]
             },
             {
                 path: "/org-admin",
@@ -61,8 +60,11 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/auth/org_admin_set_password",
-                element: <SetPasswordPage />,
-            },
-        ],
-    },
-]);
+                element: <SetPasswordPage />
+            }
+        ]
+    }
+])
+
+
+

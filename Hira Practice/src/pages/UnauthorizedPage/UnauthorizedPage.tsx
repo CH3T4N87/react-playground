@@ -7,7 +7,7 @@ const UnauthorizedPage = () => {
   const navigate = useNavigate();
   return (
     <div className={styles.unauthorizedPage}>
-      <div>
+      <div className={styles.displayUnauthorized}>
         <Typography variant="h2"><i className="fa-solid fa-triangle-exclamation"></i>  Unauthorized Acess </Typography>
         <Button onClick={() => navigate("/")}>Go Back</Button>
       </div>

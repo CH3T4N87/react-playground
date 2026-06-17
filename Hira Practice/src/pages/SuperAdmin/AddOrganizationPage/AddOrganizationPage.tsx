@@ -1,6 +1,6 @@
-import Modal from "@/components/Modal/Modal";
-import { FormProvider, useForm } from "react-hook-form";
-import type { OrganizationData } from "./AddOrganizationPage.types";
+import Modal from "@/components/Modal/Modal"
+import { FormProvider, useForm } from "react-hook-form"
+import type { AddOrganizationPageProps, OrganizationData } from "./AddOrganizationPage.types"
 import { snack } from "@/components/Snackbar/useSnackbarStore";
 import FormInput from "@/components/Form/FormInput/FormInput";
 import { MultiClass } from "@/utility/classResolve";
@@ -9,17 +9,13 @@ import Button from "@/components/Button/Button";
 import FormSelect from "@/components/Form/FormSelect/FormSelect";
 import { useCreateOrganizationMutation, useGetOrganizationQuery, useUpdateOrganizationMutation } from "@/redux/slices/orgApiSlice";
 import { useEffect } from "react";
-import { SubscriptionOptions } from "@/constants/SubscriptionOptions";
-
-interface AddOrganizationPageProps {
-    id?: string;       // present → edit mode
-    onClose: () => void;
-}
+import { SubscriptionOptions } from "./constants/SubscriptionOptions";
 
 const AddOrganizationPage = ({ id, onClose }: AddOrganizationPageProps) => {
+
     const isEditingMode = Boolean(id);
 
-    const { data: organizationData, isFetching, isLoading: isFetchingData } = useGetOrganizationQuery(id ?? "", {
+    const { data: organizationData, isFetching, isLoading: isFetchingData } = useGetOrganizationQuery(id || "", {
         skip: !id,
     });
 
@@ -29,13 +25,14 @@ const AddOrganizationPage = ({ id, onClose }: AddOrganizationPageProps) => {
     const isSubmitting = isCreating || isUpdating;
     const isLoadingForm = isFetching || isFetchingData;
 
+
     const methods = useForm<OrganizationData>({
         defaultValues: {
             organization_name: "",
             org_admin_name: "",
             org_admin_email: "",
             subscription_name: "BASIC",
-        },
+        }
     });
 
     useEffect(() => {
@@ -49,59 +46,56 @@ const AddOrganizationPage = ({ id, onClose }: AddOrganizationPageProps) => {
         }
     }, [isEditingMode, organizationData, methods]);
 
+
     const onSubmit = async (orgData: OrganizationData) => {
         try {
             if (isEditingMode && id) {
-                const response = await updateOrganization({ id, data: orgData }).unwrap();
+                const response = await updateOrganization({ id: id, data: orgData }).unwrap();
                 snack.success(response.message || "Organization updated successfully!");
             } else {
                 const response = await createOrganization(orgData).unwrap();
+                console.log("create org response: ", response);
                 snack.success(response.message || "Organization created successfully!");
             }
             onClose();
         } catch (e: any) {
-            snack.error(e?.data?.detail || e?.message || "Something went wrong!");
+            snack.error(e?.data?.detail || e?.message || e?.error || "Something went wrong!");
             console.error("Organization submission error:", e);
         }
-    };
+    }
 
-    const submitButtonText = isSubmitting
-        ? isEditingMode ? "Updating..." : "Creating..."
-        : isEditingMode ? "Update" : "Create";
-
+    const submitButtonText = isSubmitting ? (isEditingMode ? "Updating..." : "Creating...") : isEditingMode ? "Update" : "Create";
     return (
         <Modal>
             <FormProvider {...methods}>
-                <form
-                    onSubmit={methods.handleSubmit(onSubmit)}
-                    className={MultiClass([styles.form, styles.addOrgForm])}
-                >
-                    <span className={styles.formTitle}>
-                        {isEditingMode ? "Edit Organization" : "Add Organization"}
-                    </span>
-
+                <form onSubmit={methods.handleSubmit(onSubmit)} className={MultiClass([styles.form, styles.addOrgForm])}>
+                    <span className={styles.formTitle}>{isEditingMode ? "Edit Organization" : "Add Organization"}</span>
                     {isLoadingForm && (
                         <div className={styles.loadingState}>
                             <p>Loading organization details...</p>
                         </div>
                     )}
-
                     <FormInput<OrganizationData>
                         name="organization_name"
                         placeholder="Enter organization name here..."
                         label="Organization Name"
-                        rules={{ required: "Please enter organization name" }}
+                        rules={{
+                            required: "Please organization name",
+                        }}
                     />
 
                     <FormInput<OrganizationData>
                         name="org_admin_name"
                         placeholder="Enter organization admin name here..."
                         label="Organization Admin Name"
-                        rules={{ required: "Please enter organization admin name" }}
+                        rules={{
+                            required: "Please enter organization admin name",
+                        }}
                     />
 
-                    {!isEditingMode && (
-                        <FormInput<OrganizationData>
+
+                    {
+                        !isEditingMode && <FormInput<OrganizationData>
                             name="org_admin_email"
                             placeholder="Enter organization admin email here..."
                             label="Organization Admin Email"
@@ -109,17 +103,19 @@ const AddOrganizationPage = ({ id, onClose }: AddOrganizationPageProps) => {
                                 required: "Please enter organization admin email",
                                 pattern: {
                                     value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                                    message: "Invalid email address",
-                                },
+                                    message: "Invalid email address"
+                                }
                             }}
                         />
-                    )}
+                    }
 
                     <FormSelect<OrganizationData>
                         name="subscription_name"
                         label="Subscription Type"
                         options={SubscriptionOptions}
-                        rules={{ required: "Please choose subscription type" }}
+                        rules={{
+                            required: "Please choose subscription type",
+                        }}
                     />
 
                     <div className={styles.formButtonsContainer}>
@@ -131,17 +127,17 @@ const AddOrganizationPage = ({ id, onClose }: AddOrganizationPageProps) => {
                             {submitButtonText}
                         </Button>
                         <Button
+                            onClick={onClose}
                             type="button"
                             disabled={isSubmitting}
-                            onClick={onClose}
                         >
                             Cancel
                         </Button>
                     </div>
                 </form>
             </FormProvider>
-        </Modal>
-    );
-};
+        </Modal >
+    )
+}
 
-export default AddOrganizationPage;
+export default AddOrganizationPage
