@@ -1,4 +1,5 @@
-import type { PropsWithChildren } from "react"
+// Typography.types.ts
+import type { PropsWithChildren, ElementType } from "react"
 
 export type TypoVariant =
     "h1" |
@@ -7,7 +8,8 @@ export type TypoVariant =
     "caption" |
     "body1" |
     "label1" 
-    
+
 export interface TypographyProps extends PropsWithChildren {
     variant: TypoVariant
+    as?: ElementType
 }

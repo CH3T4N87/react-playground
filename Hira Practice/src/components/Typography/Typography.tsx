@@ -1,8 +1,13 @@
 import styles from "./Typography.module.scss";
 import type { TypographyProps } from "./Typography.types";
-const Typography = ({ children, variant }: TypographyProps) => {
+
+const Typography = ({ 
+    children, 
+    variant, 
+    as: Component = "span" 
+}: TypographyProps) => {
     return (
-        <span className={styles[variant]}>{children}</span>
+        <Component className={styles[variant]}>{children}</Component>
     )
 }
 
