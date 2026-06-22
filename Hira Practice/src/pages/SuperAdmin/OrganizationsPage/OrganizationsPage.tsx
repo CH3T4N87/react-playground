@@ -5,19 +5,37 @@ import styles from "./OrganizationsPage.module.scss";
 import { Outlet } from "react-router-dom";
 import { useGetOrganizationsQuery } from "@/redux/slices/orgApiSlice";
 import Loader from "@/components/Loader/Loader";
-import { useReducer } from "react";
+import React, { useReducer } from "react";
 import AddOrganizationPage from "../AddOrganizationPage/AddOrganizationPage";
 import { modalReducer } from "./OrganizationsPage.states";
 import DeleteOrganization from "../DeleteOrganization/DeleteOrganization";
+import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
+import Filter from "@/components/Filter/Filter";
+import { filterOptions, pageLimitOptions } from "./constants/Options";
+import { setFilter, setPageLimit, setPageNumber } from "@/redux/slices/filterAndSearchSlice";
 
 
 const OrganizationsPage = () => {
-
   const [modal, setModal] = useReducer(modalReducer, null);
-
   const closeModal = () => setModal(null);
 
-  const { data, isFetching } = useGetOrganizationsQuery(undefined);
+  const dispatch = useAppDispatch();
+  const query = useAppSelector(state => state.filterAndSearch)
+  
+  const onFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    dispatch(setFilter(e.target.value));
+  }
+  
+  const onPageLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    dispatch(setPageLimit(Number(e.target.value)));
+  }
+  
+  const onPageNumberChange = (operation: "prev" | "next") => {
+    dispatch(setPageNumber({type: `${operation}`}))
+  }
+
+  const { data, isFetching } = useGetOrganizationsQuery(query);
+
   return (
     <div className={styles.organizationsPage}>
       <Outlet />
@@ -28,6 +46,11 @@ const OrganizationsPage = () => {
 
       <div className={styles.orgActionsContainer}>
         <SearchBar />
+        <Filter
+          name="sortBy"
+          options={filterOptions}
+          onChange={onFilterChange}
+        />
         <Button variant="primary" onClick={() => setModal({ type: "ADD_ORGANIZATION" })}>+ ADD</Button>
       </div>
       {isFetching && <Loader />}
@@ -56,6 +79,18 @@ const OrganizationsPage = () => {
           }
         </Table.TableBody>
       </Table>
+
+      <div className={styles.paginationContainer}>
+        <Button onClick={() => onPageNumberChange("prev")}>prev</Button>
+        {query.page_number}
+        <Filter
+          name="page_limit"
+          options={pageLimitOptions}
+          onChange={onPageLimitChange}
+        />
+        <Button onClick={() => onPageNumberChange("next")}>next</Button>
+      </div>
+
     </div>
   )
 }

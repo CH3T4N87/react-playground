@@ -21,7 +21,7 @@ const RestoreOrganization = ({ id, onClose }: RestoreOrganizationProps) => {
     return (
         <Modal>
             <div>
-                <Typography variant="label1">Are you sure you want restore?</Typography>
+                <Typography variant="label">Are you sure you want restore?</Typography>
                 <div className={styles.btnContainer}>
                     <Button variant="primary" onClick={onDelete}>{isRestoring ? "Restoring..." : "Restore"}</Button>
                     <Button onClick={onClose}>Cancel</Button>

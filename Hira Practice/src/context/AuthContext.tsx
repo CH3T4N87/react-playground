@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect, type PropsWithChildren } from "react";
-import type { AuthContextType, TempUser } from "./types";
+import type { AuthContextType, User } from "./types";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<TempUser| null>(null);
+  const [user, setUser] = useState<User| null>(null);
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
-  const login = (userData: TempUser, authToken: string) => {
+  const login = (userData: User, authToken: string) => {
     setUser(userData);
     setToken(authToken);
     localStorage.setItem("token", authToken);

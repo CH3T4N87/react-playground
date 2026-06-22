@@ -2,32 +2,16 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import Typography from "@/components/Typography/Typography";
 import diamondLogo from "@/assets/diamond.png";
-import { useAuth } from "@/context/AuthContext";
 import styles from "./AppLayout.module.scss";
-import type { NavItem } from "./AppLayout.types";
+import { NAV_ITEMS_BY_ROLE } from "./constants/NavItems";
+import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
+import { logout } from "@/redux/slices/authSlice";
 
 
-
-const NAV_ITEMS_BY_ROLE: Record<string, NavItem[]> = {
-    SUPERADMIN: [
-        { label: "Dashboard", to: "dashboard" },
-        { label: "Organizations", to: "organizations" },
-        { label: "Archived", to: "organizations/archived" },
-    ],
-    ORGADMIN: [
-        { label: "Taskify", to: "" },
-        { label: "Tasktic", to: "" },
-        { label: "Trello", to: "" },
-        { label: "Proofhub", to: "" },
-    ],
-    PROJECT_COLLABRATOR: [
-        { label: "Taskify", to: "" },
-        { label: "Tasktic", to: "" },
-    ],
-};
 
 const AppLayout = () => {
-    const { user, logout } = useAuth();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector((state) => state.auth.user);
     const navigate = useNavigate();
 
     const navItems = NAV_ITEMS_BY_ROLE[user?.policies[0] ?? ""] ?? [];
@@ -49,11 +33,11 @@ const AppLayout = () => {
             </div>
             <div className={styles.rightPanel}>
                 <div className={styles.layoutNav}>
-                    <Typography variant="label1">{user?.name}</Typography>
+                    <Typography variant="label">{user?.name}</Typography>
                     <Button
                         variant="tertiary"
                         onClick={() => {
-                            logout();
+                            dispatch(logout());
                             navigate("/");
                         }}
                     >

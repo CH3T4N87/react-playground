@@ -2,13 +2,13 @@ import type { Policies } from "@/types/policies";
 
 
 export interface AuthContextType {
-    user: TempUser | null;
+    user: User | null;
     token: string | null;
-    login: (userData: TempUser, authToken: string) => void;
+    login: (userData: User, authToken: string) => void;
     logout: () => void;
 }
 
-export interface TempUser {
+export interface User {
     name: string,
     email: string,
     policies: Array<Policies>

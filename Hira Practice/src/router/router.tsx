@@ -1,13 +1,9 @@
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import GUARDS from "./guards";
-import { Policies } from "@/types/policies";
-import DeleteOrganization from "@/pages/SuperAdmin/DeleteOrganization/DeleteOrganization";
 import ArchivedOrganizations from "@/pages/SuperAdmin/ArchivedOrganizations/ArchivedOrganizations";
-import RestoreOrganization from "@/pages/SuperAdmin/RestoreOrganization/RestoreOrganization";
 import AppLayout from "@/layouts/AppLayout/AppLayout";
 const SetPasswordPage = lazy(() => import("@/pages/SetPasswordPage/SetPasswordPage"));
-const AddOrganizationPage = lazy(() => import("@/pages/SuperAdmin/AddOrganizationPage/AddOrganizationPage"));
 const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage/UnauthorizedPage"));
 const Dashboard = lazy(() => import("@/pages/SuperAdmin/Dashboard/Dashboard"));
 const OrganizationsPage = lazy(() => import("@/pages/SuperAdmin/OrganizationsPage/OrganizationsPage"));
@@ -33,11 +29,11 @@ export const router = createBrowserRouter([
                 element: <LandingPage />
             },
             {
-                path: "/super-admin",
-                Component: canActive(AppLayout, [GUARDS.isLoggedIn, () => GUARDS.hasAccess([Policies.SUPER_ADMIN])]),
+                path: "dashboard",
+                Component: canActive(AppLayout, [GUARDS.isLoggedIn]),
                 children: [
                     {
-                        path: "dashboard",
+                        path: "metrics",
                         element: <Dashboard />
                     },
                     {
@@ -49,14 +45,6 @@ export const router = createBrowserRouter([
                         element: <ArchivedOrganizations />,
                     },
                 ]
-            },
-            {
-                path: "/org-admin",
-                Component: canActive(AppLayout, [GUARDS.isLoggedIn, () => GUARDS.hasAccess([Policies.ORG_ADMIN])]),
-            },
-            {
-                path: "/collaborator",
-                Component: canActive(AppLayout, [GUARDS.isLoggedIn, () => GUARDS.hasAccess([Policies.COLLABRATOR])]),
             },
             {
                 path: "/auth/org_admin_set_password",

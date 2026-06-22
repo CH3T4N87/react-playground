@@ -23,7 +23,7 @@ const DeleteOrganization = ({ id, onClose }: DeleteOrganizationProps) => {
     return (
         <Modal>
             <div>
-                <Typography variant="label1">Are you sure you want delete?</Typography>
+                <Typography variant="label">Are you sure you want delete?</Typography>
                 <div className={styles.btnContainer}>
                     <Button variant="tertiary" onClick={onDelete}>{isDeleting ? "Deleting..." : "Delete"}</Button>
                     <Button onClick={onClose}>Cancel</Button>

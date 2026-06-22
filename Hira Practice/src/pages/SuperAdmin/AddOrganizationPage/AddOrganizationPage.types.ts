@@ -1,13 +1,7 @@
-type SubscriptionType = "BASIC" | "HALF" | "FULL"
+import z from "zod";
+import type { ZOrganizationSchema } from "./AddOrganizationPage.schema";
 
-export interface OrganizationData {
-    organization_id?: string,
-    organization_name: string,
-    // organization_logo: File,
-    org_admin_name: string,
-    org_admin_email: string,
-    subscription_name: SubscriptionType
-}
+export type OrganizationData = z.infer<typeof ZOrganizationSchema>;
 
 export interface AddOrganizationPageProps {
     id?: string,

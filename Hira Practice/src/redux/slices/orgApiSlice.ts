@@ -1,6 +1,6 @@
 import type { OrganizationData } from "@/pages/SuperAdmin/AddOrganizationPage/AddOrganizationPage.types";
 import { apiSlice } from "./apiSlice";
-import type { GetArchivedOrganizationsResponse, IOrgResponse } from "../types";
+import type { FilterAndSearchQuery, GetArchivedOrganizationsResponse, IOrgResponse } from "../types";
 
 export const orgApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -10,10 +10,11 @@ export const orgApiSlice = apiSlice.injectEndpoints({
                 method: 'GET'
             })
         }),
-        getOrganizations: builder.query<OrganizationData[], undefined>({
-            query: () => ({
+        getOrganizations: builder.query<OrganizationData[], FilterAndSearchQuery>({
+            query: (params) => ({
                 url: '/organization/get_all_active_organizations',
-                method: 'GET'
+                method: 'GET',
+                params
             }),
             providesTags: ["getOrgs"]
         }),
@@ -34,7 +35,7 @@ export const orgApiSlice = apiSlice.injectEndpoints({
             invalidatesTags: ["getOrgs"]
         }),
         deleteOrganization: builder.mutation<IOrgResponse, string>({
-            query: ( id ) => ({
+            query: (id) => ({
                 url: `/organization/delete/${id}`,
                 method: "DELETE",
             }),
